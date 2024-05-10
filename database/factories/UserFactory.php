@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,8 +25,12 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $type = $this->faker->randomElement(['user', 'shopkeeper']);
+
         return [
             'name' => fake()->name(),
+            'type' => $type,
+            'document' => $this->faker->unique()->regexify($type === 'user' ? '[0-9]{11}' : '[0-9]{14}'),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
@@ -40,5 +46,12 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function withWallet(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            Wallet::factory()->create(['user_id' => $user->id]);
+        });
     }
 }

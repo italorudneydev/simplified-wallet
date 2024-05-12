@@ -55,4 +55,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Wallet::class);
     }
+
+    public function scopeIsShopKeeper($query)
+    {
+        return $query->where('type', 'shopkeeper');
+    }
 }

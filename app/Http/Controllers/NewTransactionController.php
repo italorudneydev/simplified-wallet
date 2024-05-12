@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionRequest;
-use App\Services\TransactionService;
+use App\Services\Transactions\NewTransactionService;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +13,7 @@ class NewTransactionController extends Controller
 {
 
     public function __construct(
-        private readonly TransactionService $transactionService,
+        private readonly NewTransactionService $transactionService,
     )
     {
     }

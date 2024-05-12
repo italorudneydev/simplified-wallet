@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Transactions;
 
 use App\Enums\TransactionStatus;
 use App\Enums\WalletOperation;
 use App\Repositories\TransactionRepository;
-use App\Repositories\WalletRepository;
+use App\Services\AuthorizeService;
+use App\Services\UserService;
+use App\Services\WalletService;
 use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
-class TransactionService
+class NewTransactionService
 {
 
     public function __construct(
@@ -33,11 +35,7 @@ class TransactionService
 
         DB::beginTransaction();
         try {
-            $statusTransaction = $this->authorizeService->authorizeOperation();
 
-            if (!$statusTransaction) {
-                throw new Exception('Transaction Unauthorized', Response::HTTP_UNAUTHORIZED);
-            }
 
             $payerId = Arr::get($data, 'payer');
             $payeeId = Arr::get($data, 'payee');
@@ -47,10 +45,16 @@ class TransactionService
                 throw new Exception("Merchants are not allowed to make payments", Response::HTTP_FORBIDDEN);
             }
 
+            $statusTransaction = $this->authorizeService->authorizeOperation();
+
+            if (!$statusTransaction) {
+                throw new Exception('Transaction Unauthorized', Response::HTTP_UNAUTHORIZED);
+            }
+
             $this->walletService->updateWallet($payerId, $value, WalletOperation::SUBTRACTION);
             $this->walletService->updateWallet($payeeId, $value, WalletOperation::ADDITION);
 
-            $transaction = $this->transactionRepository->createTransection($payerId, $payeeId, $value, TransactionStatus::APPROVED->id());
+            $transaction = $this->transactionRepository->createTransaction($payerId, $payeeId, $value, TransactionStatus::APPROVED->id());
 
             $this->notifyPayee($payeeId, $transaction->id);
 
@@ -65,5 +69,10 @@ class TransactionService
     public function notifyPayee(int $userId = 1, int $transactionId = 1)
     {
         return true;
+    }
+
+    public function revertTransaction(array $data): bool
+    {
+
     }
 }

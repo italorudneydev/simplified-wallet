@@ -20,6 +20,7 @@ class WalletRepository
     public function updateValueWallet($walletId, float $amount)
     {
         $wallet = Wallet::find($walletId);
+
         if ($wallet) {
             $wallet->update(['value' => $amount]);
             return $wallet->fresh();

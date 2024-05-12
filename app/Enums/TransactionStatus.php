@@ -7,7 +7,8 @@ enum TransactionStatus: string
     case PENDING = 'pending';
     case APPROVED = 'approved';
     case REJECTED = 'rejected';
-    case CANCELLED = 'CANCELLED';
+    case CANCELLED = 'cancelled';
+    case REVERSED = 'reverted';
 
     public function id(): int
     {
@@ -16,6 +17,7 @@ enum TransactionStatus: string
             self::APPROVED => 2,
             self::REJECTED => 3,
             self::CANCELLED => 4,
+            self::REVERSED => 5,
         };
     }
 
@@ -26,6 +28,7 @@ enum TransactionStatus: string
             self::APPROVED => 'Approved',
             self::REJECTED => 'Rejected',
             self::CANCELLED => 'Cancelled',
+            self::REVERSED => 'Reverted',
         };
     }
 }

@@ -50,6 +50,9 @@ class WalletService
         }
     }
 
+    /**
+     * @throws ConflictException
+     */
     private function ensureSufficientBalance(Wallet $wallet, float $amount): void
     {
         if ($wallet->value < $amount) {

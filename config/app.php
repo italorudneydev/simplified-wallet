@@ -123,4 +123,9 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'external_apis' => [
+        'notification_api' => '',
+        'authorize_api' => 'https://m063k.wiremockapi.cloud/send',
+    ],
+
 ];

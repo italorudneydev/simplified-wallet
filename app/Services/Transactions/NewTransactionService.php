@@ -4,6 +4,7 @@ namespace App\Services\Transactions;
 
 use App\Enums\TransactionStatus;
 use App\Enums\WalletOperation;
+use App\Exceptions\UnauthorizedException;
 use App\Repositories\TransactionRepository;
 use App\Services\AuthorizeService;
 use App\Services\UserService;
@@ -48,7 +49,7 @@ class NewTransactionService
             $statusTransaction = $this->authorizeService->authorizeOperation();
 
             if (!$statusTransaction) {
-                throw new Exception('Transaction Unauthorized', Response::HTTP_UNAUTHORIZED);
+                throw new UnauthorizedException();
             }
 
             $this->walletService->updateWallet($payerId, $value, WalletOperation::SUBTRACTION);
@@ -62,17 +63,12 @@ class NewTransactionService
             return true;
         } catch (Exception $ex) {
             DB::rollBack();
-            throw new Exception($ex->getMessage(), $ex->getCode() ?? 422);
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
     }
 
     public function notifyPayee(int $userId = 1, int $transactionId = 1)
     {
         return true;
-    }
-
-    public function revertTransaction(array $data): bool
-    {
-
     }
 }

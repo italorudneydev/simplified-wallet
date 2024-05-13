@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ConflictException;
+use App\Exceptions\ServiceUnavailableException;
+use App\Exceptions\UnauthorizedException;
 use App\Http\Requests\TransactionRequest;
 use App\Services\Transactions\NewTransactionService;
 use Exception;
@@ -27,7 +30,8 @@ class NewTransactionController extends Controller
                 $this->transactionService->newTransaction($data),
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (ConflictException|ServiceUnavailableException|UnauthorizedException|Exception $e){
             Log::error('Error on ' . self::class, [
                 'exception' => $e,
                 'code' => 'new_transaction_error',
@@ -36,7 +40,7 @@ class NewTransactionController extends Controller
             return new JsonResponse([
                 'error' => __('message.erro'),
                 'details' => $e->getMessage(),
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            ], $e->getStatusCode() ?? Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

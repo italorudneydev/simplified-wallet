@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TransactionStatus;
 use App\Enums\WalletOperation;
+use App\Exceptions\ConflictException;
 use App\Models\Wallet;
 use App\Repositories\WalletRepository;
 use Exception;
@@ -52,7 +53,7 @@ class WalletService
     private function ensureSufficientBalance(Wallet $wallet, float $amount): void
     {
         if ($wallet->value < $amount) {
-            throw new Exception("Saldo insuficiente para a operação de subtração.");
+            throw new ConflictException("Saldo insuficiente para a operação de subtração.");
         }
     }
 
